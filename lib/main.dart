@@ -1,6 +1,7 @@
 import 'package:alsharq_law_office_app/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/dashboard_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +24,9 @@ class MyApp extends StatelessWidget {
           iconColor: Colors.black54,
           childrenPadding: EdgeInsets.only(right: 16),
         ),
-        fontFamily: 'Cairo', // Arabic font support
+        textTheme: GoogleFonts.cairoTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
       locale: const Locale('ar'), // Set Arabic as default locale
       debugShowCheckedModeBanner: false,
