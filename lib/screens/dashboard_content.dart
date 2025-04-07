@@ -21,279 +21,398 @@ class DashboardContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildStatsCards(),
+            _buildStatsCards(context),
             const SizedBox(height: 24),
-            _buildCharts(),
+            _buildCharts(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatsCards() {
+  Widget _buildStatsCards(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final crossAxisCount = width > 1200 ? 3 : width > 800 ? 2 : 1;
+
+    final List<Map<String, dynamic>> cards = [
+      {
+        'title': 'إجمالي العملاء',
+        'value': '11',
+        'subtitle': 'العملاء المسجلين',
+        'icon': Icons.people_outlined,
+        'color': Colors.orange,
+      },
+      {
+        'title': 'العملاء المميزين',
+        'value': '3',
+        'subtitle': 'العملاء من الدرجة الاولى',
+        'icon': Icons.star_outline,
+        'color': Colors.amber,
+      },
+      {
+        'title': 'القضايا النشطة',
+        'value': '1',
+        'subtitle': 'الامور القانونية الجارية',
+        'icon': Icons.gavel_outlined,
+        'color': Colors.green,
+      },
+      {
+        'title': 'إجمالي المستندات',
+        'value': '10',
+        'subtitle': 'المستندات المخزنة',
+        'icon': Icons.description_outlined,
+        'color': Colors.grey,
+      },
+      {
+        'title': 'المهام المتأخرة',
+        'value': '6',
+        'subtitle': 'المهام التي تجاوزت موعدها',
+        'icon': Icons.access_time,
+        'color': Colors.red,
+      },
+      {
+        'title': 'المهام المعلقة',
+        'value': '6',
+        'subtitle': 'المهام المطلوب إنجازها',
+        'icon': Icons.task_outlined,
+        'color': Colors.red,
+      },
+      {
+        'title': 'إجمالي المصروفات',
+        'value': 'SAR 101,310.00',
+        'subtitle': 'إجمالي المصروفات لهذا العام',
+        'icon': Icons.trending_down,
+        'color': Colors.red,
+      },
+      {
+        'title': 'إجمالي الإيرادات',
+        'value': 'SAR 628,624.50',
+        'subtitle': 'الإيرادات المحصلة',
+        'icon': Icons.attach_money,
+        'color': Colors.green,
+      },
+      {
+        'title': 'الفواتير المعلقة',
+        'value': '0',
+        'subtitle': 'الفواتير غير المدفوعة',
+        'icon': Icons.receipt_long_outlined,
+        'color': Colors.orange,
+      },
+    ];
+
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 3,
+      crossAxisCount: crossAxisCount,
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
-      childAspectRatio: 1.5,
-      children: [
-        _buildStatCard(
-          'إجمالي العملاء',
-          '11',
-          'العملاء المسجلين',
-          Icons.people_outline,
-          Colors.orange,
-        ),
-        _buildStatCard(
-          'العملاء المميزين',
-          '3',
-          'العملاء من الدرجة الاولى',
-          Icons.star_outline,
-          Colors.amber,
-        ),
-        _buildStatCard(
-          'القضايا النشطة',
-          '1',
-          'الامور القانونية الجارية',
-          Icons.gavel_outlined,
-          Colors.green,
-        ),
-        _buildStatCard(
-          'إجمالي المستندات',
-          '10',
-          'المستندات المخزنة',
-          Icons.description_outlined,
-          Colors.blue,
-        ),
-        _buildStatCard(
-          'المهام المتأخرة',
-          '6',
-          'المهام التي تجاوزت موعدها',
-          Icons.access_time,
-          Colors.red,
-        ),
-        _buildStatCard(
-          'المهام المعلقة',
-          '6',
-          'المهام المطلوب إنجازها',
-          Icons.pending_actions_outlined,
-          Colors.orange,
-        ),
-        _buildFinanceCard(
-          'إجمالي الإيرادات',
-          'SAR 628,624.50',
-          'الإيرادات المحصلة',
-          Icons.attach_money,
-          Colors.green,
-        ),
-        _buildFinanceCard(
-          'إجمالي المصروفات',
-          'SAR 101,310.00',
-          'إجمالي المصروفات لهذا العام',
-          Icons.money_off_outlined,
-          Colors.red,
-        ),
-        _buildStatCard(
-          'الفواتير المعلقة',
-          '0',
-          'الفواتير غير المدفوعة',
-          Icons.receipt_outlined,
-          Colors.orange,
-        ),
-      ],
+      childAspectRatio: width > 1200 ? 2.2 : width > 800 ? 2.7 : 2.6,
+      children: cards.map((card) => _buildStatCard(
+        title: card['title'],
+        value: card['value'],
+        subtitle: card['subtitle'],
+        icon: card['icon'],
+        color: card['color'],
+      )).toList(),
     );
   }
 
-  Widget _buildStatCard(String title, String value, String subtitle, IconData icon, Color color) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildStatCard({
+    required String title,
+    required String value,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: GoogleFonts.cairo(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                Icon(icon, color: color),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: GoogleFonts.cairo(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: GoogleFonts.cairo(
-                fontSize: 12,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFinanceCard(String title, String value, String subtitle, IconData icon, Color color) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+                const Spacer(),
                 Text(
-                  title,
+                  value,
                   style: GoogleFonts.cairo(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-                Icon(icon, color: color),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: GoogleFonts.cairo(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: GoogleFonts.cairo(
-                fontSize: 12,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCharts() {
-    return Row(
-      children: [
-        Expanded(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'القضايا حسب الحالة',
-                    style: GoogleFonts.cairo(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        sections: [
-                          PieChartSectionData(
-                            value: 100,
-                            color: Colors.blue,
-                            title: 'Pending',
-                            radius: 50,
-                            titleStyle: const TextStyle(color: Colors.white),
-                          ),
-                        ],
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 40,
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.cairo(
+                        fontSize: 12,
+                        color: color,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Icon(
+                      icon,
+                      color: color,
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 3,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    color.withOpacity(0.3),
+                    color.withOpacity(0.1),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.7, 1.0],
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'المهام القادمة',
-                    style: GoogleFonts.cairo(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCharts(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    
+    return width > 800
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _buildTasksChart()),
+              const SizedBox(width: 16),
+              Expanded(child: _buildCasesChart()),
+            ],
+          )
+        : Column(
+            children: [
+              _buildTasksChart(),
+              const SizedBox(height: 16),
+              _buildCasesChart(),
+            ],
+          );
+  }
+
+  Widget _buildTasksChart() {
+    final List<String> labels = [
+      'متأخر',
+      'اليوم',
+      'غداً',
+      'Wed 09/04',
+      'Thu 10/04',
+      'Fri 11/04',
+      'Sat 12/04',
+      'Sun 13/04',
+    ];
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'المهام القادمة',
+              style: GoogleFonts.cairo(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            AspectRatio(
+              aspectRatio: 16/9,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: 6,
+                  minY: 0,
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 2,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: GoogleFonts.cairo(fontSize: 12),
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: BarChart(
-                      BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: 6,
-                        barTouchData: BarTouchData(enabled: false),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                const titles = ['مباشر', 'اليوم', 'غداً'];
-                                if (value.toInt() >= 0 && value.toInt() < titles.length) {
-                                  return Text(
-                                    titles[value.toInt()],
-                                    style: GoogleFonts.cairo(fontSize: 12),
-                                  );
-                                }
-                                return const Text('');
-                              },
-                            ),
-                          ),
-                        ),
-                        borderData: FlBorderData(show: false),
-                        barGroups: [
-                          BarChartGroupData(
-                            x: 0,
-                            barRods: [
-                              BarChartRodData(
-                                toY: 6,
-                                color: Colors.redAccent,
-                                width: 20,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() >= 0 && value.toInt() < labels.length) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                labels[value.toInt()],
+                                style: GoogleFonts.cairo(fontSize: 12),
                               ),
-                            ],
-                          ),
-                        ],
+                            );
+                          }
+                          return const Text('');
+                        },
                       ),
                     ),
                   ),
+                   gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: 2,
+                ),
+                borderData: FlBorderData(show: false),
+                barGroups: [
+                  BarChartGroupData(
+                    x: 0,
+                    barRods: [
+                      BarChartRodData(
+                        toY: 6,
+                        color: Colors.redAccent,
+                        width: 20,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ],
+                  ),
+                  ...List.generate(7, (index) => BarChartGroupData(
+                    x: index + 1,
+                    barRods: [
+                      BarChartRodData(
+                        toY: 0,
+                        color: Colors.redAccent,
+                        width: 20,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ],
+                  )),
                 ],
+                ),
+               
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
-} 
+
+  Widget _buildCasesChart() {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'القضايا حسب الحالة',
+              style: GoogleFonts.cairo(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            AspectRatio(
+              aspectRatio: 16/9,
+              child: PieChart(
+                PieChartData(
+                  sections: [
+                    PieChartSectionData(
+                      value: 100,
+                      color: Colors.blue,
+                      title: 'Pending',
+                      radius: 50,
+                      titleStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 40,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class WavyLinePainter extends CustomPainter {
+  final Color color;
+
+  WavyLinePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color.withOpacity(0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    final path = Path();
+    path.moveTo(0, size.height);
+    
+    // Create a gentle wave effect
+    for (var i = 0; i < size.width; i += 30) {
+      path.quadraticBezierTo(
+        i + 15,
+        size.height - 2,
+        i + 30,
+        size.height,
+      );
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}

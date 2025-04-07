@@ -2,9 +2,15 @@ import 'package:alsharq_law_office_app/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/dashboard_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:device_preview/device_preview.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+      enabled: true,
+      builder: (context) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,6 +19,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       title: 'Lawyers CRM',
       theme: ThemeData(
         primaryColor: Colors.orange,
@@ -28,9 +37,8 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      locale: const Locale('ar'), // Set Arabic as default locale
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
+      home: const DashboardScreen(),
     );
   }
 }
