@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'dashboard_content.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -26,28 +29,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
               _scaffoldKey.currentState?.openDrawer();
             },
           ),
-          title: const Text(
-            'لوحة التحكم',
-            style: TextStyle(color: Colors.black),
+          title: Text(
+            _getScreenTitle(),
+            style: const TextStyle(color: Colors.black),
           ),
         ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
+              DrawerHeader(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                 ),
-                child: Center(
-                  child: Text(
-                    'لوحة التحكم',
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontSize: 24,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/logo.svg', // Make sure to add your logo image
+                      height: 60,
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'مكتب الشرق للمحاماه',
+                      style: GoogleFonts.cairo(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              DrawerItem(
+                icon: Icons.dashboard_outlined,
+                title: 'لوحة التحكم',
+                onTap: () => _handleNavigation(0),
               ),
               _buildExpandableSection(
                 'إدارة العملاء والقضايا',
@@ -55,12 +71,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   DrawerItem(
                     icon: Icons.people_outline,
                     title: 'العملاء',
-                    onTap: () => _handleNavigation(0),
+                    onTap: () => _handleNavigation(1),
                   ),
                   DrawerItem(
                     icon: Icons.gavel_outlined,
                     title: 'القضايا',
-                    onTap: () => _handleNavigation(1),
+                    onTap: () => _handleNavigation(2),
                   ),
                 ],
               ),
@@ -70,12 +86,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   DrawerItem(
                     icon: Icons.task_outlined,
                     title: 'المهام',
-                    onTap: () => _handleNavigation(2),
+                    onTap: () => _handleNavigation(3),
                   ),
                   DrawerItem(
                     icon: Icons.description_outlined,
                     title: 'المستندات',
-                    onTap: () => _handleNavigation(3),
+                    onTap: () => _handleNavigation(4),
                   ),
                 ],
               ),
@@ -85,12 +101,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   DrawerItem(
                     icon: Icons.receipt_outlined,
                     title: 'الفواتير',
-                    onTap: () => _handleNavigation(4),
+                    onTap: () => _handleNavigation(5),
                   ),
                   DrawerItem(
                     icon: Icons.account_balance_wallet_outlined,
                     title: 'المصروفات',
-                    onTap: () => _handleNavigation(5),
+                    onTap: () => _handleNavigation(6),
                   ),
                 ],
               ),
@@ -100,12 +116,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   DrawerItem(
                     icon: Icons.people_outline,
                     title: 'المستخدمين',
-                    onTap: () => _handleNavigation(6),
+                    onTap: () => _handleNavigation(7),
                   ),
                   DrawerItem(
                     icon: Icons.admin_panel_settings_outlined,
                     title: 'الأدوار',
-                    onTap: () => _handleNavigation(7),
+                    onTap: () => _handleNavigation(8),
                   ),
                 ],
               ),
@@ -115,6 +131,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         body: _buildContent(),
       ),
     );
+  }
+
+  String _getScreenTitle() {
+    switch (_selectedIndex) {
+      case 0:
+        return 'لوحة التحكم';
+      case 1:
+        return 'العملاء';
+      case 2:
+        return 'القضايا';
+      // ... add other cases for different screens
+      default:
+        return 'لوحة التحكم';
+    }
   }
 
   Widget _buildExpandableSection(String title, List<DrawerItem> items) {
@@ -138,20 +168,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildContent() {
-    // Placeholder content - replace with actual screens
-    final List<String> titles = [
-      'العملاء',
-      'القضايا',
-      'المهام',
-      'المستندات',
-      'الفواتير',
-      'المصروفات',
-      'المستخدمين',
-      'الأدوار',
-    ];
-    
+    if (_selectedIndex == 0) {
+      return const DashboardContent();
+    }
+    // Return other screens based on _selectedIndex
     return Center(
-      child: Text(titles[_selectedIndex]),
+      child: Text('Content for index $_selectedIndex'),
     );
   }
 }
@@ -160,21 +182,24 @@ class DrawerItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
+  final double horizontalPadding;
 
   const DrawerItem({
     super.key,
     required this.icon,
     required this.title,
     required this.onTap,
+    this.horizontalPadding = 16.0,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       leading: Icon(icon, color: Colors.grey[600]),
       title: Text(
         title,
-        style: TextStyle(
+        style: GoogleFonts.cairo(
           color: Colors.grey[800],
           fontSize: 14,
         ),
