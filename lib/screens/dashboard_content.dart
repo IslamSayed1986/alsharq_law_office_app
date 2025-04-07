@@ -1,9 +1,84 @@
+import 'package:alsharq_law_office_app/models/hearing.dart';
+import 'package:alsharq_law_office_app/models/task.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:alsharq_law_office_app/screens/task_details_screen.dart';
 
-class DashboardContent extends StatelessWidget {
+
+class DashboardContent extends StatefulWidget {
   const DashboardContent({super.key});
+
+  @override
+  State<DashboardContent> createState() => _DashboardContentState();
+}
+
+class _DashboardContentState extends State<DashboardContent> {
+  late List<Task> tasks;
+  late List<Task> filteredTasks;
+  late List<Hearing> hearings;
+  late List<Hearing> filteredHearings;
+  
+  @override
+  void initState() {
+    super.initState();
+    tasks = [
+      Task(
+        id: '1',
+        title: 'إعداد طلب استئناف',
+        dueDate: 'مارس 25, 2025',
+        status: TaskStatus.inProgress,
+        priority: TaskPriority.high,
+        assignedTo: 'أحمد محمد',
+      ),
+      Task(
+        id: '2',
+        title: 'اجتماع تعريفي بالعميل',
+        dueDate: 'مارس 25, 2025',
+        status: TaskStatus.pending,
+        priority: TaskPriority.medium,
+        assignedTo: 'علي أحمد',
+      ),
+    ];
+    filteredTasks = List.from(tasks);
+
+    hearings = [
+      Hearing(
+        caseNumber: 'CAS-2025-8160',
+        title: 'قضية مخالفة اقامة',
+        client: 'محمد عبدالله خان',
+        date: 'مارس 25, 2025',
+        status: HearingStatus.scheduled,
+        remainingDays: 5,
+      ),
+      // Add more hearings as needed
+    ];
+    filteredHearings = List.from(hearings);
+  }
+
+  void searchTasks(String query) {
+    setState(() {
+      filteredTasks = tasks.where((task) {
+        return task.title.contains(query) ||
+               task.assignedTo.contains(query) ||
+               task.dueDate.contains(query) ||
+               task.status.label.contains(query) ||
+               task.priority.label.contains(query);
+      }).toList();
+    });
+  }
+
+  void searchHearings(String query) {
+    setState(() {
+      filteredHearings = hearings.where((hearing) {
+        return hearing.title.contains(query) ||
+               hearing.client.contains(query) ||
+               hearing.caseNumber.contains(query) ||
+               hearing.date.contains(query) ||
+               hearing.status.label.contains(query);
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +99,10 @@ class DashboardContent extends StatelessWidget {
             _buildStatsCards(context),
             const SizedBox(height: 24),
             _buildCharts(context),
+            const SizedBox(height: 24),
+            _buildLatestTasks(),
+            const SizedBox(height: 24),
+            _buildUpcomingHearings(),
           ],
         ),
       ),
@@ -393,6 +472,393 @@ class DashboardContent extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildLatestTasks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'المهام الحديثة',
+          style: GoogleFonts.cairo(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            // Search Bar
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: TextField(
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.cairo(),
+                  decoration: InputDecoration(
+                    hintText: 'بحث...',
+                    hintStyle: GoogleFonts.cairo(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  onChanged: searchTasks,
+                ),
+              ),
+            ),
+            // Page Size Selector
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<int>(
+                  value: 10,
+                  items: [10, 25, 50, 100].map((size) {
+                    return DropdownMenuItem<int>(
+                      value: size,
+                      child: Text(
+                        '$size لكل صفحة',
+                        style: GoogleFonts.cairo(),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    // Implement page size change
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            horizontalMargin: 0,
+            columnSpacing: 24,
+            columns: [
+              DataColumn(
+                label: Text(
+                  'عنوان المهمة',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'تاريخ الاستحقاق',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'الأولوية',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'معين إلى',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'حالة المهمة',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const DataColumn(
+                label: Text(''),
+              ),
+            ],
+            rows: filteredTasks.map((task) => _buildTaskRow(task)).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  DataRow _buildTaskRow(Task task) {
+    return DataRow(
+      cells: [
+        DataCell(Text(
+          task.title,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(Text(
+          task.dueDate,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: task.priority.color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              task.priority.label,
+              style: GoogleFonts.cairo(
+                color: task.priority.color,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+        DataCell(Text(
+          task.assignedTo,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: task.status.color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              task.status.label,
+              style: GoogleFonts.cairo(
+                color: task.status.color,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+        DataCell(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.visibility_outlined),
+                onPressed: () => _viewTask(task),
+                tooltip: 'عرض',
+              ),
+              IconButton(
+                icon: const Icon(Icons.check_circle_outline),
+                onPressed: () => _markTaskComplete(task),
+                tooltip: 'تحديد كمكتمل',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUpcomingHearings() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'الجلسات القادمة',
+          style: GoogleFonts.cairo(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            // Search Bar
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: TextField(
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.cairo(),
+                  decoration: InputDecoration(
+                    hintText: 'بحث...',
+                    hintStyle: GoogleFonts.cairo(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  onChanged: searchHearings,
+                ),
+              ),
+            ),
+            // Page Size Selector
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<int>(
+                  value: 10,
+                  items: [10, 25, 50, 100].map((size) {
+                    return DropdownMenuItem<int>(
+                      value: size,
+                      child: Text(
+                        '$size لكل صفحة',
+                        style: GoogleFonts.cairo(),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    // Implement page size change
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            horizontalMargin: 0,
+            columnSpacing: 24,
+            columns: [
+              DataColumn(
+                label: Text(
+                  'رقم القضية',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'عنوان القضية',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'العميل',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'التاريخ',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'الحالة',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'الايام المتبقية',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const DataColumn(
+                label: Text(''),
+              ),
+            ],
+            rows: filteredHearings.map((hearing) => _buildHearingRow(hearing)).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  DataRow _buildHearingRow(Hearing hearing) {
+    return DataRow(
+      cells: [
+        DataCell(Text(
+          hearing.caseNumber,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(Text(
+          hearing.title,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(Text(
+          hearing.client,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(Text(
+          hearing.date,
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: hearing.status.color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              hearing.status.label,
+              style: GoogleFonts.cairo(
+                color: hearing.status.color,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+        DataCell(Text(
+          '${hearing.remainingDays} يوم',
+          style: GoogleFonts.cairo(),
+        )),
+        DataCell(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.visibility_outlined),
+                onPressed: () => _viewHearing(hearing),
+                tooltip: 'عرض',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _viewTask(Task task) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TaskDetailsScreen(task: task),
+      ),
+    );
+  }
+
+  void _markTaskComplete(Task task) {
+    setState(() {
+      // Remove the task from both lists
+      tasks.removeWhere((t) => t.id == task.id);
+      filteredTasks.removeWhere((t) => t.id == task.id);
+    });
+    // Here you would typically also update the backend
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'تم اكتمال المهمة بنجاح',
+          style: GoogleFonts.cairo(),
+          textAlign: TextAlign.right,
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _viewHearing(Hearing hearing) {
+    // Implement hearing view functionality
   }
 }
 
