@@ -1,3 +1,4 @@
+import 'package:alsharq_law_office_app/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:alsharq_law_office_app/screens/login/widgets/custom_text_field.dart';
 
@@ -47,6 +48,11 @@ class _LoginFormState extends State<LoginForm> {
       print('Email: ${_emailController.text}');
       print('Password: ${_passwordController.text}');
       print('Remember Me: $_rememberMe');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+
+      );
     }
   }
 

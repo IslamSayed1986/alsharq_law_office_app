@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:alsharq_law_office_app/screens/login/login_screen.dart';
+import 'package:flutter/material.dart';
+import 'screens/dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,17 +12,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'مكتب الشرق للمحاماه',
-      debugShowCheckedModeBanner: false,
+      title: 'Lawyers CRM',
       theme: ThemeData(
+        primaryColor: Colors.orange,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1E88E5),
-          primary: const Color(0xFF1E88E5),
-          secondary: const Color(0xFF42A5F5),
+          seedColor: Colors.orange,
         ),
-        useMaterial3: true,
-        fontFamily: 'Cairo',
+        expansionTileTheme: const ExpansionTileThemeData(
+          textColor: Colors.black87,
+          iconColor: Colors.black54,
+          childrenPadding: EdgeInsets.only(right: 16),
+        ),
+        fontFamily: 'Cairo', // Arabic font support
       ),
+      locale: const Locale('ar'), // Set Arabic as default locale
+      debugShowCheckedModeBanner: false,
       home: const LoginScreen(),
     );
   }
