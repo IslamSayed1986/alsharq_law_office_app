@@ -268,28 +268,33 @@ class DashboardContent extends StatelessWidget {
                     show: true,
                     rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: 2,
-                      getTitlesWidget: (value, meta) {
-                        return Text(
-                          value.toInt().toString(),
-                          style: GoogleFonts.cairo(fontSize: 12),
-                        );
-                      },
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 2,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toInt().toString(),
+                            style: GoogleFonts.cairo(fontSize: 12),
+                          );
+                        },
+                      ),
                     ),
-                  ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
+                        reservedSize: 36,
                         getTitlesWidget: (value, meta) {
                           if (value.toInt() >= 0 && value.toInt() < labels.length) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8),
+                            return SideTitleWidget(
+                              axisSide: meta.axisSide,
                               child: Text(
                                 labels[value.toInt()],
-                                style: GoogleFonts.cairo(fontSize: 12),
+                                style: GoogleFonts.cairo(
+                                  fontSize: 10,
+                                  color: Colors.grey[600],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             );
                           }
@@ -298,38 +303,44 @@ class DashboardContent extends StatelessWidget {
                       ),
                     ),
                   ),
-                   gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: 2,
-                ),
-                borderData: FlBorderData(show: false),
-                barGroups: [
-                  BarChartGroupData(
-                    x: 0,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 6,
-                        color: Colors.redAccent,
-                        width: 20,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: 2,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.grey[300]!,
+                        strokeWidth: 1,
+                        dashArray: [5, 5],
+                      );
+                    },
                   ),
-                  ...List.generate(7, (index) => BarChartGroupData(
-                    x: index + 1,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 0,
-                        color: Colors.redAccent,
-                        width: 20,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  )),
-                ],
+                  borderData: FlBorderData(show: false),
+                  barGroups: [
+                    BarChartGroupData(
+                      x: 0,
+                      barRods: [
+                        BarChartRodData(
+                          toY: 6,
+                          color: Colors.redAccent,
+                          width: 16,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ],
+                    ),
+                    ...List.generate(7, (index) => BarChartGroupData(
+                      x: index + 1,
+                      barRods: [
+                        BarChartRodData(
+                          toY: 0,
+                          color: Colors.redAccent,
+                          width: 16,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ],
+                    )),
+                  ],
                 ),
-               
               ),
             ),
           ],
